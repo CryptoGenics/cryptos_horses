@@ -1,7 +1,7 @@
 local Horses = {}
-local BrushPrompt
-local LeadPrompt
-local FeedPrompt
+local BrushPrompt = {}
+local LeadPrompt = {}
+local FeedPrompt = {}
 
 Citizen.CreateThread(function()
     while true do
@@ -29,32 +29,33 @@ end)
 Citizen.CreateThread(function()
     while true do
         Wait(0)
-        if PromptHasStandardModeCompleted(BrushPrompt) then -- 0x4CC0E2FE
-            local result, entity = GetPlayerTargetEntity(PlayerId())
-            local coords = GetEntityCoords(PlayerPedId())
-            local coordshorse = GetEntityCoords(entity)
-            local distance = #(coords - coordshorse)
-            if distance < 1.75 then
-                TriggerServerEvent('cryptos_horses:requestbrush', entity)
+        local id = PlayerId()
+        if IsPlayerTargettingAnything(id) then
+            local result, entity = GetPlayerTargetEntity(id)
+            if PromptHasStandardModeCompleted(BrushPrompt[entity]) then -- 0x4CC0E2FE
+                local coords = GetEntityCoords(PlayerPedId())
+                local coordshorse = GetEntityCoords(entity)
+                local distance = #(coords - coordshorse)
+                if distance < 1.75 then
+                    TriggerServerEvent('cryptos_horses:requestbrush', entity)
+                end
             end
-        end
-        if PromptHasStandardModeCompleted(LeadPrompt) then -- 0xE30CD707
-            local player = PlayerPedId()
-            local result, entity = GetPlayerTargetEntity(PlayerId())
-            local coords = GetEntityCoords(player)
-            local coordshorse = GetEntityCoords(entity)
-            local distance = #(coords - coordshorse)
-            if distance < 1.75 then
-                Citizen.InvokeNative(0x9A7A4A54596FE09D, player, entity)
+            if PromptHasStandardModeCompleted(LeadPrompt[entity]) then -- 0xE30CD707
+                local player = PlayerPedId()
+                local coords = GetEntityCoords(player)
+                local coordshorse = GetEntityCoords(entity)
+                local distance = #(coords - coordshorse)
+                if distance < 1.75 then
+                    Citizen.InvokeNative(0x9A7A4A54596FE09D, player, entity)
+                end
             end
-        end
-        if PromptHasStandardModeCompleted(FeedPrompt) then -- 0xE30CD707
-            local result, entity = GetPlayerTargetEntity(PlayerId())
-            local coords = GetEntityCoords(PlayerPedId())
-            local coordshorse = GetEntityCoords(entity)
-            local distance = #(coords - coordshorse)
-            if distance < 1.75 then
-                TriggerServerEvent('cryptos_horses:requestfeed', entity)
+            if PromptHasStandardModeCompleted(FeedPrompt[entity]) then -- 0xE30CD707
+                local coords = GetEntityCoords(PlayerPedId())
+                local coordshorse = GetEntityCoords(entity)
+                local distance = #(coords - coordshorse)
+                if distance < 1.75 then
+                    TriggerServerEvent('cryptos_horses:requestfeed', entity)
+                end
             end
         end
     end
@@ -64,37 +65,37 @@ function AddPrompts(entity)
     local group = Citizen.InvokeNative(0xB796970BD125FCE8, entity, Citizen.ResultAsLong()) -- PromptGetGroupIdForTargetEntity
 
     local str = 'Brush'
-    BrushPrompt = PromptRegisterBegin()
-    PromptSetControlAction(BrushPrompt, 0x63A38F2C)
+    BrushPrompt[entity] = PromptRegisterBegin()
+    PromptSetControlAction(BrushPrompt[entity], 0x63A38F2C)
     str = CreateVarString(10, 'LITERAL_STRING', str)
-    PromptSetText(BrushPrompt, str)
-    PromptSetEnabled(BrushPrompt, 1)
-    PromptSetVisible(BrushPrompt, 1)
-    PromptSetStandardMode(BrushPrompt, 1)
-    PromptSetGroup(BrushPrompt, group)
-    PromptRegisterEnd(BrushPrompt)
+    PromptSetText(BrushPrompt[entity], str)
+    PromptSetEnabled(BrushPrompt[entity], 1)
+    PromptSetVisible(BrushPrompt[entity], 1)
+    PromptSetStandardMode(BrushPrompt[entity], 1)
+    PromptSetGroup(BrushPrompt[entity], group)
+    PromptRegisterEnd(BrushPrompt[entity])
     
     local str2 = 'Lead'
-    LeadPrompt = PromptRegisterBegin()
-    PromptSetControlAction(LeadPrompt, 0x17D3BFF5)
+    LeadPrompt[entity] = PromptRegisterBegin()
+    PromptSetControlAction(LeadPrompt[entity], 0x17D3BFF5)
     str = CreateVarString(10, 'LITERAL_STRING', str2)
-    PromptSetText(LeadPrompt, str)
-    PromptSetEnabled(LeadPrompt, 1)
-    PromptSetVisible(LeadPrompt, 1)
-    PromptSetStandardMode(LeadPrompt, 1)
-    PromptSetGroup(LeadPrompt, group)
-    PromptRegisterEnd(LeadPrompt)
+    PromptSetText(LeadPrompt[entity], str)
+    PromptSetEnabled(LeadPrompt[entity], 1)
+    PromptSetVisible(LeadPrompt[entity], 1)
+    PromptSetStandardMode(LeadPrompt[entity], 1)
+    PromptSetGroup(LeadPrompt[entity], group)
+    PromptRegisterEnd(LeadPrompt[entity])
 
     local str3 = 'Feed'
-    FeedPrompt = PromptRegisterBegin()
-    PromptSetControlAction(FeedPrompt, 0x0D55A0F0)
+    FeedPrompt[entity] = PromptRegisterBegin()
+    PromptSetControlAction(FeedPrompt[entity], 0x0D55A0F0)
     str = CreateVarString(10, 'LITERAL_STRING', str3)
-    PromptSetText(FeedPrompt, str)
-    PromptSetEnabled(FeedPrompt, 1)
-    PromptSetVisible(FeedPrompt, 1)
-    PromptSetStandardMode(FeedPrompt, 1)
-    PromptSetGroup(FeedPrompt, group)
-    PromptRegisterEnd(FeedPrompt)
+    PromptSetText(FeedPrompt[entity], str)
+    PromptSetEnabled(FeedPrompt[entity], 1)
+    PromptSetVisible(FeedPrompt[entity], 1)
+    PromptSetStandardMode(FeedPrompt[entity], 1)
+    PromptSetGroup(FeedPrompt[entity], group)
+    PromptRegisterEnd(FeedPrompt[entity])
 end
 
 RegisterNetEvent('cryptos_horses:Brush')
