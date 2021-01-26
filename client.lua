@@ -98,77 +98,63 @@ function AddPrompts(entity)
     PromptRegisterEnd(FeedPrompt[entity])
 end
 
+function Brush(player, horse)
+    Citizen.InvokeNative(0xCD181A959CFDD7F4, player, horse, GetHashKey("INTERACTION_BRUSH"), 0, 0)
+    if Horses[horse] == 0 then
+        Wait(8000)
+        ClearPedEnvDirt(horse)
+        brushcount = 1
+    elseif Horses[horse] > 0 then
+        Wait(8000)
+        Citizen.InvokeNative(0xE3144B932DFDFF65, horse, 0.0, -1, 1, 1)
+        ClearPedEnvDirt(horse)
+        ClearPedDamageDecalByZone(horse ,10 ,"ALL")
+        ClearPedBloodDamage(horse)
+        Citizen.InvokeNative(0xD8544F6260F5F01E, horse, 10)
+        Horses[horse] = 0
+    end
+end
+
+function Feed(player, horse, increase)
+    TriggerServerEvent("cryptos_horses:Consume")
+    Citizen.InvokeNative(0xCD181A959CFDD7F4, player, horse, -224471938, 0, 0)
+    Wait(5000)
+    PlaySoundFrontend("Core_Fill_Up", "Consumption_Sounds", true, 0)
+    local Health = GetAttributeCoreValue(horse, 0)
+    local newHealth = Health + increase
+    local Stamina = GetAttributeCoreValue(horse, 0)
+    local newStamina = Stamina + increase
+    Citizen.InvokeNative(0xC6258F41D86676E0, horse, 0, newHealth) --core
+    Citizen.InvokeNative(0xC6258F41D86676E0, horse, 1, newStamina) --core
+end
+
 RegisterNetEvent('cryptos_horses:Brush')
 AddEventHandler('cryptos_horses:Brush', function (horse)
     local player = PlayerPedId()
-    if horse == nil then
-        if IsPedOnMount(player) then
-            local horse = GetMount(player)
-            Citizen.InvokeNative(0xCD181A959CFDD7F4, player, horse, GetHashKey("INTERACTION_BRUSH"), 0, 0)
-            if Horses[horse] == 0 then
-                Wait(8000)
-                ClearPedEnvDirt(horse)
-                brushcount = 1
-            elseif Horses[horse] > 0 then
-                Wait(8000)
-                Citizen.InvokeNative(0xE3144B932DFDFF65, horse, 0.0, -1, 1, 1)
-                ClearPedEnvDirt(horse)
-                ClearPedDamageDecalByZone(horse ,10 ,"ALL")
-                ClearPedBloodDamage(horse)
-                Citizen.InvokeNative(0xD8544F6260F5F01E, horse, 10)
-                Horses[horse] = 0
-            end
-        end
-    else        
+    if horse ~= nil then       
         local coords = GetEntityCoords(player)
         local coordshorse = GetEntityCoords(horse)
         local distance = #(coords - coordshorse)
         if distance < 1.5 then
-            Citizen.InvokeNative(0xCD181A959CFDD7F4, player, horse, GetHashKey("INTERACTION_BRUSH"), 0, 0)
-            if Horses[horse] == 0 then
-                Wait(8000)
-                ClearPedEnvDirt(horse)
-                brushcount = 1
-            elseif Horses[horse] > 0 then
-                Wait(8000)
-                Citizen.InvokeNative(0xE3144B932DFDFF65, horse, 0.0, -1, 1, 1)
-                ClearPedEnvDirt(horse)
-                ClearPedDamageDecalByZone(horse ,10 ,"ALL")
-                ClearPedBloodDamage(horse)
-                Citizen.InvokeNative(0xD8544F6260F5F01E, horse, 10)
-                Horses[horse] = 0
-            end
+            Brush(player, horse)
+        end
+    else
+        if IsPedOnMount(player) then
+            local horse = GetMount(player)
+            Brush(player, horse)
         end
     end
 end)
 
 RegisterNetEvent('cryptos_horses:Feed')
-AddEventHandler('cryptos_horses:Feed', function(horse)
+AddEventHandler('cryptos_horses:Feed', function(horse, increase)
     local player = PlayerPedId()
-    if horse == nil then
+    if horse == false then
         if IsPedOnMount(player) then
             local horse = GetMount(player)
-            TriggerServerEvent("cryptos_horses:Consume")
-            Citizen.InvokeNative(0xCD181A959CFDD7F4, player, horse, -224471938, 0, 0)
-            Wait(5000)
-            PlaySoundFrontend("Core_Fill_Up", "Consumption_Sounds", true, 0)
-            local Health = GetAttributeCoreValue(horse, 0)
-            local newHealth = Health + 25
-            local Stamina = GetAttributeCoreValue(horse, 0)
-            local newStamina = Stamina + 25
-            Citizen.InvokeNative(0xC6258F41D86676E0, horse, 0, newHealth) --core
-            Citizen.InvokeNative(0xC6258F41D86676E0, horse, 1, newStamina) --core
+            Feed(player, horse, increase)
         end
     else
-        TriggerServerEvent("cryptos_horses:Consume")
-        Citizen.InvokeNative(0xCD181A959CFDD7F4, player, horse, -224471938, 0, 0)
-        Wait(5000)
-        PlaySoundFrontend("Core_Fill_Up", "Consumption_Sounds", true, 0)
-        local Health = GetAttributeCoreValue(horse, 0)
-        local newHealth = Health + 25
-        local Stamina = GetAttributeCoreValue(horse, 0)
-        local newStamina = Stamina + 25
-        Citizen.InvokeNative(0xC6258F41D86676E0, horse, 0, newHealth) --core
-        Citizen.InvokeNative(0xC6258F41D86676E0, horse, 1, newStamina) --core
+        Feed(player, horse, increase)
     end
 end)

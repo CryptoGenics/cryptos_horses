@@ -3,6 +3,7 @@ Config = {}
 Config.Redemrp_inventory2 = false
 
 Config.FeedItem = 'wildcarrot'
+Config.FeedPercentage = 25  -- Increases health and stamina core by %
 
 ------------------------------
 -------Redemrp_inventory------
