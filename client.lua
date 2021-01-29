@@ -7,14 +7,17 @@ Citizen.CreateThread(function()
     while true do
         Wait(1000)
         local itemSet = CreateItemset(true)
-        local size = Citizen.InvokeNative(0x59B57C4B06531E1E, GetEntityCoords(PlayerPedId()), 3.5, itemSet, 1, Citizen.ResultAsInteger())
+        local size = Citizen.InvokeNative(0x59B57C4B06531E1E, GetEntityCoords(PlayerPedId()), 20.0, itemSet, 1, Citizen.ResultAsInteger())
         if size > 0 then
             for index = 0, size - 1 do
                 local entity = GetIndexedItemInItemset(index, itemSet)  
-                if Horses[entity] == nil then
-                    if GetPedType(entity) == 28 then
-                        Horses[entity] = 0
-                        AddPrompts(entity)
+                local model = GetEntityModel(entity)
+                if Citizen.InvokeNative(0x772A1969F649E902, model) == 1 then -- IS_MODEL_A_HORSE
+                    if Horses[entity] == nil then
+                        if GetPedType(entity) == 28 then
+                            Horses[entity] = 0
+                            AddPrompts(entity)
+                        end
                     end
                 end
             end
