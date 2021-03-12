@@ -156,7 +156,7 @@ AddEventHandler('cryptos_horses:Feed', function(horse, increase)
     local coordshorse = GetEntityCoords(horse)
     local distance = #(coords - coordshorse)
  
-          if distance < 2.0 then        
+    if distance < 2.0 then        
             Feed(player, horse, increase)        
     elseif IsPedOnMount(player) then           
             Feed(player, horse, increase) 
