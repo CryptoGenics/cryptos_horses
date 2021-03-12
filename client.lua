@@ -142,7 +142,6 @@ AddEventHandler('cryptos_horses:Brush', function (horse)
     if distance < 2.0 then            
             Brush(player, horse)        
     elseif IsPedOnMount(player) then
-            local horse = GetMount(player)
             Brush(player, horse)
         
     end
