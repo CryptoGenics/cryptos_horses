@@ -134,30 +134,35 @@ end
 RegisterNetEvent('cryptos_horses:Brush')
 AddEventHandler('cryptos_horses:Brush', function (horse)
     local player = PlayerPedId()
-    if horse ~= nil then       
-        local coords = GetEntityCoords(player)
-        local coordshorse = GetEntityCoords(horse)
-        local distance = #(coords - coordshorse)
-        if distance < 1.5 then
-            Brush(player, horse)
-        end
-    else
-        if IsPedOnMount(player) then
+    local horse = GetLastMount(player)
+    local coords = GetEntityCoords(player)
+    local coordshorse = GetEntityCoords(horse)
+    local distance = #(coords - coordshorse)        
+        
+    if distance < 2.0 then            
+            Brush(player, horse)        
+    elseif IsPedOnMount(player) then
             local horse = GetMount(player)
             Brush(player, horse)
-        end
+        
     end
 end)
 
-RegisterNetEvent('cryptos_horses:Feed')
+RegisterNetEvent('cryptos_horses:Feed')   
 AddEventHandler('cryptos_horses:Feed', function(horse, increase)
     local player = PlayerPedId()
-    if horse == false then
-        if IsPedOnMount(player) then
-            local horse = GetMount(player)
-            Feed(player, horse, increase)
-        end
-    else
-        Feed(player, horse, increase)
+    local horse = GetLastMount(player)
+    local coords = GetEntityCoords(player)
+    local coordshorse = GetEntityCoords(horse)
+    local distance = #(coords - coordshorse)
+ 
+          if distance < 2.0 then        
+            Feed(player, horse, increase)        
+    elseif IsPedOnMount(player) then           
+            Feed(player, horse, increase) 
     end
 end)
+
+function GetLastMount(ped)
+	return Citizen.InvokeNative(0x4C8B59171957BCF7, ped)
+end
