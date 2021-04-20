@@ -118,8 +118,8 @@ function Brush(player, horse)
     end
 end
 
-function Feed(player, horse, increase)
-    TriggerServerEvent("cryptos_horses:Consume")
+function Feed(player, horse, increase, item)
+    TriggerServerEvent("cryptos_horses:Consume", item)
     Citizen.InvokeNative(0xCD181A959CFDD7F4, player, horse, -224471938, 0, 0)
     Wait(5000)
     PlaySoundFrontend("Core_Fill_Up", "Consumption_Sounds", true, 0)
@@ -150,14 +150,14 @@ AddEventHandler('cryptos_horses:Brush', function (horse)
 end)
 
 RegisterNetEvent('cryptos_horses:Feed')
-AddEventHandler('cryptos_horses:Feed', function(horse, increase)
+AddEventHandler('cryptos_horses:Feed', function(horse, increase, item)
     local player = PlayerPedId()
     if horse == false then
         if IsPedOnMount(player) then
             local horse = GetMount(player)
-            Feed(player, horse, increase)
+            Feed(player, horse, increase, item)
         end
     else
-        Feed(player, horse, increase)
+        Feed(player, horse, increase, item)
     end
 end)

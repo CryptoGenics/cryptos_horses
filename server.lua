@@ -12,27 +12,42 @@ Citizen.CreateThread(function()
     for k,v in pairs(Config.FeedItems) do
         RegisterServerEvent("RegisterUsableItem:"..v)
         AddEventHandler("RegisterUsableItem:"..v, function(source)
-            TriggerClientEvent('cryptos_horses:Feed', source, false, Config.FeedPercentage)
+            TriggerClientEvent('cryptos_horses:Feed', source, false, Config.FeedPercentage, v)
         end)
     end
 end)
 
 RegisterServerEvent("cryptos_horses:Consume")
-AddEventHandler("cryptos_horses:Consume", function()
+AddEventHandler("cryptos_horses:Consume", function(item)
     local _source = source
-    for k,FeedItem in pairs(Config.FeedItems) do
+    if item then
         if Config.Redemrp_inventory2 == true then
-            local ItemData = Inventory.getItem(_source, FeedItem)
+            local ItemData = Inventory.getItem(_source, item)
             if ItemData.ItemAmount > 0 then
-                local ItemData = Inventory.getItem(_source, FeedItem)
+                local ItemData = Inventory.getItem(_source, item)
                 ItemData.RemoveItem(1)
-                break
             end
         else
-            local amount = Inventory.checkItem(_source, FeedItem)
+            local amount = Inventory.checkItem(_source, item)
             if amount > 0 then
-                Inventory.delItem(_source, FeedItem, 1)
-                break
+                Inventory.delItem(_source, item, 1)
+            end
+        end
+    else
+        for k,FeedItem in pairs(Config.FeedItems) do
+            if Config.Redemrp_inventory2 == true then
+                local ItemData = Inventory.getItem(_source, FeedItem)
+                if ItemData.ItemAmount > 0 then
+                    local ItemData = Inventory.getItem(_source, FeedItem)
+                    ItemData.RemoveItem(1)
+                    break
+                end
+            else
+                local amount = Inventory.checkItem(_source, FeedItem)
+                if amount > 0 then
+                    Inventory.delItem(_source, FeedItem, 1)
+                    break
+                end
             end
         end
     end
