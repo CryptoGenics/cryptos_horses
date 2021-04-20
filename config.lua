@@ -2,7 +2,7 @@ Config = {}
 
 Config.Redemrp_inventory2 = false
 
-Config.FeedItem = 'wildcarrot'
+Config.FeedItems = {'wildcarrot', 'apple'}
 Config.FeedPercentage = 25  -- Increases health and stamina core by %
 
 ------------------------------
@@ -11,18 +11,22 @@ Config.FeedPercentage = 25  -- Increases health and stamina core by %
 -- Config.Usable = {
 --     "brush",
 --     "wildcarrot",
+--     "apple"
 -- }
 -- Config.Labels = {
 --     ["brush"] = "Brush",
 --     ["wildcarrot"] = "Carrot",
+--     ["apple"] = "Apple",
 -- }
 -- Config.Limit = {  
 --     brush = 5,
 --     wilecarrot = 64,
+--     apple = 64,
 -- }
 -- Config.Weight = {
 --     brush = 0.5,
 --     wildcarrot = 0.25,
+--     apple = 0.25,
 -- }
 
 ------------------------------
@@ -49,5 +53,16 @@ Config.FeedPercentage = 25  -- Increases health and stamina core by %
 --         requireLvl = 0,
 --         limit = 64,
 --         imgsrc = "items/wildcarrot.png",
+--         type = "item_standard",
+--     },
+-- ["apple"] = {
+--         label = "Apple",
+--         description = "Nice Juicy Apple",
+--         weight = 0.25,
+--         canBeDropped = true,
+--         canBeUsed = true,
+--         requireLvl = 0,
+--         limit = 64,
+--         imgsrc = "items/apple.png",
 --         type = "item_standard",
 --     },

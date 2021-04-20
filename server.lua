@@ -8,20 +8,33 @@ AddEventHandler("RegisterUsableItem:brush", function(source)
 	TriggerClientEvent('cryptos_horses:Brush', source)
 end)
 
-local FeedItem = Config.FeedItem
-RegisterServerEvent("RegisterUsableItem:"..FeedItem)
-AddEventHandler("RegisterUsableItem:"..FeedItem, function(source)
-	TriggerClientEvent('cryptos_horses:Feed', source, false, Config.FeedPercentage)
+Citizen.CreateThread(function()
+    for k,v in pairs(Config.FeedItems) do
+        RegisterServerEvent("RegisterUsableItem:"..v)
+        AddEventHandler("RegisterUsableItem:"..v, function(source)
+            TriggerClientEvent('cryptos_horses:Feed', source, false, Config.FeedPercentage)
+        end)
+    end
 end)
 
 RegisterServerEvent("cryptos_horses:Consume")
-AddEventHandler("cryptos_horses:Consume", function(item)
+AddEventHandler("cryptos_horses:Consume", function()
     local _source = source
-    if Config.Redemrp_inventory2 == true then
-        local ItemData = Inventory.getItem(_source, FeedItem)
-        ItemData.RemoveItem(1)
-    else
-        Inventory.delItem(_source, FeedItem, 1)
+    for k,FeedItem in pairs(Config.FeedItems) do
+        if Config.Redemrp_inventory2 == true then
+            local ItemData = Inventory.getItem(_source, FeedItem)
+            if ItemData.ItemAmount > 0 then
+                local ItemData = Inventory.getItem(_source, FeedItem)
+                ItemData.RemoveItem(1)
+                break
+            end
+        else
+            local amount = Inventory.checkItem(_source, FeedItem)
+            if amount > 0 then
+                Inventory.delItem(_source, FeedItem, 1)
+                break
+            end
+        end
     end
 end)
 
@@ -48,19 +61,25 @@ end)
 RegisterServerEvent("cryptos_horses:requestfeed")
 AddEventHandler("cryptos_horses:requestfeed", function(horse)
 	local _source = source
-    if Config.Redemrp_inventory2 == true then
-        local ItemData = Inventory.getItem(_source, FeedItem)
-        if ItemData.ItemAmount > 0 then
-            TriggerClientEvent('cryptos_horses:Feed', _source, horse, Config.FeedPercentage)
+    local founditem = false
+    for k,FeedItem in pairs(Config.FeedItems) do
+        if Config.Redemrp_inventory2 == true then
+            local ItemData = Inventory.getItem(_source, FeedItem)
+            if ItemData.ItemAmount > 0 then
+                TriggerClientEvent('cryptos_horses:Feed', _source, horse, Config.FeedPercentage)
+                founditem = true
+                break
+            end
         else
-            TriggerClientEvent('redemrp_notification:start', _source, "you dont any food for your horse", 5, 'error')
+            local amount = Inventory.checkItem(_source, FeedItem)
+            if amount > 0 then
+                TriggerClientEvent('cryptos_horses:Feed', _source, horse, Config.FeedPercentage)
+                founditem = true
+                break
+            end
         end
-    else
-        local amount = Inventory.checkItem(_source, FeedItem)
-        if amount > 0 then
-            TriggerClientEvent('cryptos_horses:Feed', _source, horse, Config.FeedPercentage)
-        else
-            TriggerClientEvent('redemrp_notification:start', _source, "you dont any food for your horse", 5, 'error')
-        end
+    end
+    if not founditem then
+        TriggerClientEvent('redemrp_notification:start', _source, "you dont any food for your horse", 5, 'error')
     end
 end)
